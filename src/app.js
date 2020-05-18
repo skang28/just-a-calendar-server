@@ -21,6 +21,12 @@ app.use(cors({
     origin: CLIENT_ORIGIN
 }))
 
+const types = require('pg').types;
+const TIMESTAMPTZ_OID = 1184;
+const TIMESTAMP_OID = 1114;
+types.setTypeParser(TIMESTAMPTZ_OID, val => val);
+types.setTypeParser(TIMESTAMP_OID, val => val);
+
 app.use('/api/events', eventsRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/users', usersRouter)
