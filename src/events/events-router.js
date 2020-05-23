@@ -8,6 +8,7 @@ const eventsRouter = express.Router()
 const jsonParser = express.json()
 eventsRouter.use(jwtAuth.requireAuth)
 
+// router for events endpoint. set up for all 4 CRUD operations.
 eventsRouter
     .route('/')
     .get((req, res, next) => {
@@ -33,6 +34,12 @@ eventsRouter
             return res.status(400).json({
               error: { message: `Uh oh! You are missing '${key}' in your submission. Please ensure you fill out all fields!` }
             })
+        }
+
+        if (start_date_time > end_date_time) {
+          return res.status(400).json({
+            error: { message: `Uh oh! You cannot have the start time/date after the end time/date!`}
+          })
         }
         
         newEvent.user_id = req.user.id
@@ -93,6 +100,12 @@ eventsRouter
               message: `Request body must content either 'title', 'content', and 'date posted'`
             }
           })
+        
+        if (start_date_time > end_date_time) {
+          return res.status(400).json({
+            error: { message: `Uh oh! You cannot have the start time/date after the end time/date!`}
+          })
+        }
           
 
         eventToUpdate.user_id = req.user.id

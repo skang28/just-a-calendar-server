@@ -4,6 +4,7 @@ const AuthService = require('./auth-service')
 const authRouter = express.Router()
 const jsonBodyParser = express.json()
 
+// login router for user login. set up for post. account and password are authenticated
 authRouter
   .post('/login', jsonBodyParser, (req, res, next) => {
     const { account_name, account_password } = req.body

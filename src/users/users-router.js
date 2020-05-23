@@ -5,6 +5,7 @@ const UsersService = require('./users-service')
 const usersRouter = express.Router()
 const jsonBodyParser = express.json()
 
+// router for users endpoint. set up to POST new accounts. validation on username and password.
 usersRouter
   .post('/', jsonBodyParser, (req, res, next) => {
     let { account_name, account_password } = req.body

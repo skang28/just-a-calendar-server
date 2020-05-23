@@ -1,26 +1,43 @@
-# Express Boilerplate!
+# Just a Calendar
 
-This is a boilerplate project used for starting new projects!
+[Live app](https://just-a-calendar-app.skang28.now.sh/)
 
-## Set up
+## Summary
+Just a Calendar is an app that brings a fresh take on the classic calendar app. This app aims to bring all the essential functionality that all calendar apps offer without all the extra fluff. The user can create, edit, and delete events on the calendar. The user can view the calendar in 3 different views, daily, weekly, and monthly. Simplicity is the theme.
 
-Complete the following steps to start a new project (NEW-PROJECT-NAME):
+1. Home page is the default view of the app, and shows the calendar in its monthly view. This view also shows upcoming events for the user on the left. This list can be seen on all three views, monthly, weekly, and daily.
 
-1. Clone this repository to your local machine `git clone BOILERPLATE-URL NEW-PROJECTS-NAME`
-2. `cd` into the cloned repository
-3. Make a fresh start of the git history for this project with `rm -rf .git && git init`
-4. Install the node dependencies `npm install`
-5. Move the example Environment file to `.env` that will be ignored by git and read by the express server `mv example.env .env`
-6. Edit the contents of the `package.json` to use NEW-PROJECT-NAME instead of `"name": "express-boilerplate",`
+2. The weekly view page shows only the current week and any events in that week.
 
-## Scripts
+3. The daily view page shows only the current day of the week and any events occuring on that day.
 
-Start the application `npm start`
+4. The user can create or edit an event through the event form page.
 
-Start nodemon for the application `npm run dev`
 
-Run the tests `npm test`
 
-## Deploying
+## API Documentation
 
-When your new project is ready for deployment, add a new Heroku application with `heroku create`. This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's master branch.# just-a-calendar-server
+### Authentication
+#### POST /auth
+Creates an authentication request for user login, and creates an authentication token for successful logins.
+
+### Events
+#### GET /events
+Retrieves all events stored in database specific to user currently logged in.
+
+#### POST /events
+Creates a new event specific to user currently logged in.
+
+#### PATCH /events
+Updates an event chosen by user.
+
+#### DELETE /events
+Deletes a selected event.
+
+### Users
+#### POST /users
+Creates a new user account with validation on username and password.
+
+
+## Technology Used
+HTML, CSS, Javascript, React
