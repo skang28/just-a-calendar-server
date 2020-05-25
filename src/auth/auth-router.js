@@ -40,7 +40,10 @@ authRouter
             })
           })
       })
-      .catch(next)
+      .catch(err => {
+        console.log("ERROR", err);
+        next(err);
+      });
   })
 
 module.exports = authRouter
