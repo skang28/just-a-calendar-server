@@ -36,8 +36,8 @@ describe('App', () => {
       let newUser = await fetch(`${config.API_ENDPOINT}/api/users`, {
         method: 'POST',
         body: JSON.stringify({
-            account_name: event.target.registrationName.value,
-            account_password: event.target.registrationPassword.value
+            account_name: testUser.account_name,
+            account_password: testUser.account_password
         }),
         headers: {
             'Content-type':'application/json'
@@ -49,8 +49,8 @@ describe('App', () => {
       let userLoginResponse = await fetch(`${config.API_ENDPOINT}/api/auth/login`, {
         method: 'POST',
         body: JSON.stringify({
-            account_name: event.target.accountName.value,
-            account_password: event.target.accountPassword.value
+            account_name: testUser.account_name,
+            account_password: testUser.account_password
         }),
         headers: {
             'Content-type': 'application/json'
