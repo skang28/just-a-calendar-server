@@ -74,7 +74,10 @@ describe('App', () => {
     return supertest(app)
       .post('/api/users')
       .send(testUser)
-      .set('Accept', 'application/json')
+      .set({
+        'Accept':'application/json',
+        'Authorization': `bearer ${token}`
+      })
       .expect('Content-type', /json/)
       .expect(201)
   })
@@ -83,7 +86,10 @@ describe('App', () => {
     return supertest(app)
       .post('/api/events')
       .send(testUser)
-      .set('Accept', 'application/json')
+      .set({
+        'Accept':'application/json',
+        'Authorization': `bearer ${token}`
+      })
       .expect('Content-type', /json/)
       .expect(201)
   })
@@ -98,7 +104,10 @@ describe('App', () => {
     return supertest(app)
       .post('/api/events')
       .send(testEvent)
-      .set('Accept', 'application/json')
+      .set({
+        'Accept':'application/json',
+        'Authorization': `bearer ${token}`
+      })
       .expect('Content-type', /json/)
       .expect(201)
   })
@@ -111,7 +120,10 @@ context('test patching and deleting events', () => {
   it('PATCH /api/events/:event_id responds with 204', () => {
     return supertest(app)
       .patch('/api/events/1')
-      .set('Content-type', 'application/json')
+      .set({
+        'Accept':'application/json',
+        'Authorization': `bearer ${token}`
+      })      
       .send(testPatch)
       .expect(204)
   })
