@@ -31,30 +31,34 @@ describe('App', () => {
     });
 
     app.set('db', db);
-    let createUser = await fetch(`${config.API_ENDPOINT}/api/users`, {
-      method: 'POST',
-      body: JSON.stringify({
-          account_name: event.target.registrationName.value,
-          account_password: event.target.registrationPassword.value
-      }),
-      headers: {
-          'Content-type':'application/json'
-      }
-    });
 
-    let userLoginResponse = await fetch(`${config.API_ENDPOINT}/api/auth/login`, {
-      method: 'POST',
-      body: JSON.stringify({
-          account_name: event.target.accountName.value,
-          account_password: event.target.accountPassword.value
-      }),
-      headers: {
-          'Content-type': 'application/json'
-      }
-    });
+    async function createUser() {
+      let newUser = await fetch(`${config.API_ENDPOINT}/api/users`, {
+        method: 'POST',
+        body: JSON.stringify({
+            account_name: event.target.registrationName.value,
+            account_password: event.target.registrationPassword.value
+        }),
+        headers: {
+            'Content-type':'application/json'
+        }
+      });
+    }
 
-    token = await userLoginResponse.json();
-    token = token.authToken;
+    async function loginUser() {
+      let userLoginResponse = await fetch(`${config.API_ENDPOINT}/api/auth/login`, {
+        method: 'POST',
+        body: JSON.stringify({
+            account_name: event.target.accountName.value,
+            account_password: event.target.accountPassword.value
+        }),
+        headers: {
+            'Content-type': 'application/json'
+        }
+      });
+      token = await userLoginResponse.json();
+      token = token.authToken;
+    }
     // put token into authorization header in .set()
   })
 
