@@ -58,15 +58,16 @@ describe('App', () => {
       });
       token = await userLoginResponse.json();
       token = token.authToken;
+      return token;
     }
     // put token into authorization header in .set()
   })
 
-  after('disconnect from db', () => db.destroy())
+  before('clean the table', () => db.raw('TRUNCATE jac_users, events RESTART IDENTITY CASCADE'));
+  
+  after('disconnect from db', () => db.destroy());
 
-  before('clean the table', () => db.raw('TRUNCATE jac_users, events RESTART IDENTITY CASCADE'))
-
-  afterEach('cleanup', () => db.raw('TRUNCATE jac_users, events RESTART IDENTITY CASCADE'))
+  afterEach('cleanup', () => db.raw('TRUNCATE jac_users, events RESTART IDENTITY CASCADE'));
 
   it('GET / responds with 200 containing "Hello, world!"', () => {
     return supertest(app)
@@ -78,10 +79,7 @@ describe('App', () => {
     return supertest(app)
       .post('/api/users')
       .send(testUser)
-      .set({
-        'Accept':'application/json',
-        'Authorization': `bearer ${token}`
-      })
+      .set('Accept','application/json')
       .expect('Content-type', /json/)
       .expect(201)
   })
