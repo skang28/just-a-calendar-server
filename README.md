@@ -6,12 +6,19 @@
 Just a Calendar is an app that brings a fresh take on the classic calendar app. This app aims to bring all the essential functionality that all calendar apps offer without all the extra fluff. The user can create, edit, and delete events on the calendar. The user can view the calendar in 3 different views, daily, weekly, and monthly. Simplicity is the theme.
 
 1. Home page is the default view of the app, and shows the calendar in its monthly view. This view also shows upcoming events for the user on the left. This list can be seen on all three views, monthly, weekly, and daily.
+![Home Page](pictures/HomePage.png)
 
 2. The weekly view page shows only the current week and any events in that week.
+![Weekly View](pictures/WeeklyView.png)
 
-3. The daily view page shows only the current day of the week and any events occuring on that day.
+3. The daily view page shows only the current day of the week and any events occuring on that day. It also highlights the event pop-up that can be viewed on all 3 views. This modal displays all information entered for the event.
+![Daily View](pictures/DailyView.png)
 
 4. The user can create or edit an event through the event form page.
+![Event Form](pictures/EventForm.png)
+
+5. The login/registration page is for user account login/registration.
+![Login/Registration Page](pictures/LoginPage.png)
 
 
 
