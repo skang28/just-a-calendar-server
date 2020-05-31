@@ -36,48 +36,53 @@ describe('App', () => {
     });
 
     app.set('db', db);
-  })
+  });
 
-  function newUser() {
-    supertest(app)
+  before('clean the table', () => db.raw('TRUNCATE jac_users, events RESTART IDENTITY CASCADE'));
+
+  
+  /*before('create and login to test user account for test', (done) => {
+      supertest(app)
       .post('/api/users')
       .send(testUser)
-      .set('Accept', 'application/json')
+      .set('Accept','application/json')
+      .expect(201, done);
+  })*/
+
+  before('trying to get promise to work', async () => {
+    let p1 = new Promise((resolve) => {
+      supertest(app)
+      .post('/api/users')
+      .send(testUser)
+      .set('Accept','application/json')
       .expect(201)
-  }
+      resolve();
+    })
 
-  function loginUser() {
-    supertest(app)
-      .post('/api/users')
+    let p2 = new Promise((resolve) => {
+      supertest(app)
+      .post('/api/auth/login')
       .send(testUser)
-      .set('Accept', 'application/json')
-      .then(res => {
-        return res.json()
+      .set('Accept','application/json')
+      .then( res=> {
+        console.log(res.authToken)
       })
-      .then(authRes => {
-        token = authRes.authToken
-        console.log(token)
-      })
-  }
-
-
-  before('clean the table', () => db.raw('TRUNCATE jac_users, events RESTART IDENTITY CASCADE'))
-
-  
-  before('create test user and login to test user accoutn',() => {
-  
+      resolve();
+    })
+    await Promise.all([p1, p2]);
+    console.log(token);
   })
 
-  afterEach('cleanup', () => db.raw('TRUNCATE events RESTART IDENTITY CASCADE'))
+  afterEach('cleanup', () => db.raw('TRUNCATE events RESTART IDENTITY CASCADE'));
 
-  after('disconnect from db', () => db.destroy())
+  after('disconnect from db', () => db.destroy());
 
 
   it('GET / responds with 200 containing "Hello, world!"', () => {
     return supertest(app)
       .get('/')
       .expect(200, 'Hello, world!')
-  })
+  });
 
   it('POST /api/users responds with 201', () => {
     return supertest(app)
@@ -86,23 +91,23 @@ describe('App', () => {
       .set('Accept','application/json')
       .expect('Content-type', /json/)
       .expect(201)
-  })
+  });
 
   it('POST /api/auth/login responds with 200', () => {
     return supertest(app)
       .post('/api/auth/login')
-      .send(testUser2)
+      .send(testUser)
       .set('Accept','application/json')
       .expect('Content-type', /json/)
       .expect(200)
-  })
+  });
 
-  it('GET /api/events responds with 200', () => {
+  /*it('GET /api/events responds with 200', () => {
     return supertest(app)
       .get('/api/events')
       .expect(200)
-  })
-/*
+  });
+
   it('POST /api/events responds with 201', () => {
     return supertest(app)
       .post('/api/events')
