@@ -29,6 +29,7 @@ const testUser2 = {
 describe('App', () => {
   let db;
   let token;
+  let auth = {};
   before(() => {
     db = knex({
       client: 'pg',
@@ -39,39 +40,28 @@ describe('App', () => {
   });
 
   before('clean the table', () => db.raw('TRUNCATE jac_users, events RESTART IDENTITY CASCADE'));
-
   
-  /*before('create and login to test user account for test', (done) => {
-      supertest(app)
-      .post('/api/users')
-      .send(testUser)
-      .set('Accept','application/json')
-      .expect(201, done);
-  })*/
-
-  before('trying to get promise to work', async () => {
-    let p1 = new Promise((resolve) => {
-      supertest(app)
-      .post('/api/users')
-      .send(testUser)
-      .set('Accept','application/json')
-      .expect(201)
-      resolve();
-    })
-
-    let p2 = new Promise((resolve) => {
-      supertest(app)
-      .post('/api/auth/login')
-      .send(testUser)
-      .set('Accept','application/json')
-      .then( res=> {
-        console.log(res.authToken)
-      })
-      resolve();
-    })
-    await Promise.all([p1, p2]);
-    console.log(token);
+  before('insert test user', () => {
+    db.into('jac_users').insert(testUser)
   })
+
+  function loginUser(auth) {
+    return function(done) {
+      supertest(app)
+        .post('/api/auth/login')
+        .send(testUser)
+        .expect(200)
+        .end(onResponse);
+      
+        function onResponse(err, res) {
+          auth.token = res.body.authToken;
+          console.log(auth.token);
+          return done();
+        }
+    };
+  };
+
+  before(loginUser(auth));
 
   afterEach('cleanup', () => db.raw('TRUNCATE events RESTART IDENTITY CASCADE'));
 
@@ -96,18 +86,18 @@ describe('App', () => {
   it('POST /api/auth/login responds with 200', () => {
     return supertest(app)
       .post('/api/auth/login')
-      .send(testUser)
-      .set('Accept','application/json')
-      .expect('Content-type', /json/)
+      .send(testUser2)
+      .set('Accept', 'application/json')
       .expect(200)
   });
 
-  /*it('GET /api/events responds with 200', () => {
+  it('GET /api/events responds with 200', () => {
     return supertest(app)
       .get('/api/events')
+      .set('Authorization', 'bearer ' + auth.token)
       .expect(200)
   });
-
+/*
   it('POST /api/events responds with 201', () => {
     return supertest(app)
       .post('/api/events')
