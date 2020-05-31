@@ -1,7 +1,7 @@
 const app = require('../src/app');
 const supertest = require('supertest');
 const knex = require('knex');
-const config = require('../src/config');
+const {expect} = require('chai');
 
 const textEvent = {
   title: 'Test Title',
@@ -20,6 +20,11 @@ const testUser = {
   account_password: 'Password2@'
 };
 
+const testUser2 = {
+  account_name: 'testuser2',
+  account_password: 'Password2@'
+}
+
 //tests for all endpoijnt functionality coded in router for events and user login/creation
 describe('App', () => {
   let db;
@@ -31,70 +36,40 @@ describe('App', () => {
     });
 
     app.set('db', db);
-
-    let createUser = async() => {
-      let newUser = await fetch(`${config.API_ENDPOINT}/api/users`, {
-        method: 'POST',
-        body: JSON.stringify({
-            account_name: testUser.account_name,
-            account_password: testUser.account_password
-        }),
-        headers: {
-            'Content-type':'application/json'
-        }
-      })
-    }
-
-    let loginUser = async() => {
-      let userLogin = await fetch(`${config.API_ENDPOINT}/api/auth/login`, {
-        method: 'POST',
-        body: JSON.stringify({
-            account_name: testUser.account_name,
-            account_password: testUser.account_password
-        }),
-        headers: {
-            'Content-type': 'application/json'
-        }
-      });
-      token = await userLogin.json();
-      token = token.authToken;
-      return token;
-    }
-    // put token into authorization header in .set()
   })
 
-  let userLogin = async() => {
-    let newUser = await fetch(`${config.API_ENDPOINT}/api/users`, {
-      method: 'POST',
-      body: JSON.stringify({
-          account_name: testUser.account_name,
-          account_password: testUser.account_password
-      }),
-      headers: {
-          'Content-type':'application/json'
-      }
-    })
-
-    let loginResponse = await fetch(`${config.API_ENDPOINT}/api/auth/login`, {
-      method: 'POST',
-      body: JSON.stringify({
-          account_name: testUser.account_name,
-          account_password: testUser.account_password
-      }),
-      headers: {
-          'Content-type': 'application/json'
-      }
-    })
-    token = await loginResponse.json();
-    token = token.authToken;
-    return token;
-  }
-
   before('clean the table', () => db.raw('TRUNCATE jac_users, events RESTART IDENTITY CASCADE'));
-  
+
+  before('login to test user account for test',() => {
+    return new Promise((resolve) => {
+      supertest(app)
+      .post('/api/auth/login')
+      .send(testUser)
+      .set('Accept','application/json')
+      .then(res => {
+        token = res.authToken;
+        console.log(token);
+        resolve();
+      })
+    })
+  });
+
+  /*before(() => {
+    return supertest(app)
+      .post('/api/auth/login')
+      .send(testUser)
+      .set('Accept', 'application/sjon')
+      .then(res => {
+        token = res.authToken
+        console.log(token)
+      })
+  })*/
+
+
+  afterEach('cleanup', () => db.raw('TRUNCATE events RESTART IDENTITY CASCADE'));
+
   after('disconnect from db', () => db.destroy());
 
-  afterEach('cleanup', () => db.raw('TRUNCATE jac_users, events RESTART IDENTITY CASCADE'));
 
   it('GET / responds with 200 containing "Hello, world!"', () => {
     return supertest(app)
@@ -105,20 +80,20 @@ describe('App', () => {
   it('POST /api/users responds with 201', () => {
     return supertest(app)
       .post('/api/users')
-      .send(testUser)
+      .send(testUser2)
       .set('Accept','application/json')
       .expect('Content-type', /json/)
       .expect(201)
   })
 
   it('POST /api/login responds with 201', () => {
-    userLogin()
+    console.log(token)
     return supertest(app)
       .post('/api/events')
       .send(testUser)
       .set({
         'Accept':'application/json',
-        'Authorization': `bearer ${userLogin().token}`
+        'Authorization': `bearer ${token}`
       })
       .expect('Content-type', /json/)
       .expect(201)
