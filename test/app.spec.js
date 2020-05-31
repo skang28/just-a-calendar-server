@@ -3,16 +3,17 @@ const supertest = require('supertest');
 const knex = require('knex');
 const {expect} = require('chai');
 
-const textEvent = {
+const testEvent = {
   title: 'Test Title',
-  event_location: 'Test Location',
+  location: 'Test Location',
   start_date_time: '2020-05-29T02:17:19.545Z',
   end_date_time: '2020-05-29T04:17:19.545Z',
   description: 'Test Description',
 };
 
 const testPatch = {
-  title: 'Test Patch'
+  title: 'Test Patch',
+  user: 1
 };
 
 const testUser = {
@@ -41,8 +42,17 @@ describe('App', () => {
 
   before('clean the table', () => db.raw('TRUNCATE jac_users, events RESTART IDENTITY CASCADE'));
   
-  before('insert test user', () => {
-    db.into('jac_users').insert(testUser)
+  /*before('insert test user', () => {
+    db.insert(testUser).into('jac_users')
+  })*/
+
+  before('create test user for testing', () => {
+    return supertest(app)
+      .post('/api/users')
+      .send(testUser)
+      .set('Accept','application/json')
+      .expect('Content-type', /json/)
+      .expect(201)
   })
 
   function loginUser(auth) {
@@ -55,6 +65,7 @@ describe('App', () => {
       
         function onResponse(err, res) {
           auth.token = res.body.authToken;
+          console.log(res.body);
           console.log(auth.token);
           return done();
         }
@@ -86,7 +97,7 @@ describe('App', () => {
   it('POST /api/auth/login responds with 200', () => {
     return supertest(app)
       .post('/api/auth/login')
-      .send(testUser2)
+      .send(testUser)
       .set('Accept', 'application/json')
       .expect(200)
   });
@@ -97,14 +108,14 @@ describe('App', () => {
       .set('Authorization', 'bearer ' + auth.token)
       .expect(200)
   });
-/*
+
   it('POST /api/events responds with 201', () => {
     return supertest(app)
       .post('/api/events')
       .send(testEvent)
       .set({
         'Accept':'application/json',
-        'Authorization': `bearer ${token}`
+        'Authorization': 'bearer ' + auth.token
       })
       .expect('Content-type', /json/)
       .expect(201)
@@ -117,10 +128,10 @@ context('test patching and deleting events', () => {
 
   it('PATCH /api/events/:event_id responds with 204', () => {
     return supertest(app)
-      .patch('/api/events/1')
+      .patch(`/api/events/1`)
       .set({
         'Accept':'application/json',
-        'Authorization': `bearer ${token}`
+        'Authorization': 'bearer ' + auth.token
       })      
       .send(testPatch)
       .expect(204)
@@ -128,8 +139,10 @@ context('test patching and deleting events', () => {
 
   it('DELETE /api/events/:event_id responds with 204', () => {
     return supertest(app)
-      .delete('/api/events/1')
+      .delete(`/api/events/1`)
       .expect(204)
-  })*/
+  })
   
+})
+
 })
