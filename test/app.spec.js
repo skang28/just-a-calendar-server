@@ -13,7 +13,6 @@ const testEvent = {
 
 const testPatch = {
   title: 'Test Patch',
-  user: 1
 };
 
 const testUser = {
