@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const config = require('../config')
 
+//service set up for CRUD operations
 const AuthService = {
   getUserWithUserName(db, user_name) {
     return db('jac_users')

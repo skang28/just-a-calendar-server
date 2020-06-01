@@ -9,6 +9,7 @@ const testEvent = {
   start_date_time: '2020-05-29T02:17:19.545Z',
   end_date_time: '2020-05-29T04:17:19.545Z',
   description: 'Test Description',
+  user_id: 1
 };
 
 const testPatch = {
@@ -40,10 +41,6 @@ describe('App', () => {
   });
 
   before('clean the table', () => db.raw('TRUNCATE jac_users, events RESTART IDENTITY CASCADE'));
-  
-  /*before('insert test user', () => {
-    db.insert(testUser).into('jac_users')
-  })*/
 
   before('create test user for testing', () => {
     return supertest(app)
@@ -52,7 +49,7 @@ describe('App', () => {
       .set('Accept','application/json')
       .expect('Content-type', /json/)
       .expect(201)
-  })
+  });
 
   function loginUser(auth) {
     return function(done) {
@@ -64,8 +61,6 @@ describe('App', () => {
       
         function onResponse(err, res) {
           auth.token = res.body.authToken;
-          console.log(res.body);
-          console.log(auth.token);
           return done();
         }
     };
@@ -74,6 +69,8 @@ describe('App', () => {
   before(loginUser(auth));
 
   afterEach('cleanup', () => db.raw('TRUNCATE events RESTART IDENTITY CASCADE'));
+
+  after('cleanup jac_users table at the end', () => db.raw('TRUNCATE jac_users RESTART IDENTITY CASCADE'));
 
   after('disconnect from db', () => db.destroy());
 
@@ -118,30 +115,31 @@ describe('App', () => {
       })
       .expect('Content-type', /json/)
       .expect(201)
-  })
+  });
 
-context('test patching and deleting events', () => {
-  beforeEach('insert event', () => {
-    return db.into('events').insert(testEvent)
-  })
+  context('test patching and deleting events', () => {
+    beforeEach('insert event', () => {
+      return db.into('events').insert(testEvent)
+    })
 
-  it('PATCH /api/events/:event_id responds with 204', () => {
-    return supertest(app)
-      .patch(`/api/events/1`)
-      .set({
-        'Accept':'application/json',
-        'Authorization': 'bearer ' + auth.token
-      })      
-      .send(testPatch)
-      .expect(204)
-  })
+    it('PATCH /api/events/:event_id responds with 204', () => {
+      return supertest(app)
+        .patch(`/api/events/1`)
+        .set({
+          'Accept':'application/json',
+          'Authorization': 'bearer ' + auth.token
+        })      
+        .send(testPatch)
+        .expect(204)
+    });
 
-  it('DELETE /api/events/:event_id responds with 204', () => {
-    return supertest(app)
-      .delete(`/api/events/1`)
-      .expect(204)
-  })
+    it('DELETE /api/events/:event_id responds with 204', () => {
+      return supertest(app)
+        .delete(`/api/events/1`)
+        .set('Authorization', 'bearer ' + auth.token)
+        .expect(204)
+    });
   
-})
+  });
 
-})
+});

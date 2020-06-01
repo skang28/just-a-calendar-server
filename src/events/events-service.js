@@ -1,6 +1,5 @@
 // EventsService set up for CRUD operations.
-//add user ids to 'where'
-//change getAllEvents to select user_id
+
 const EventsService = {
     getAllEvents(knex, user_id) {
         return knex.select('*').from('events').where({user_id:user_id})

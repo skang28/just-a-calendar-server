@@ -1,4 +1,3 @@
-  
 const path = require('path')
 const express = require('express')
 const EventsService = require('./events-service')
@@ -8,7 +7,7 @@ const eventsRouter = express.Router()
 const jsonParser = express.json()
 eventsRouter.use(jwtAuth.requireAuth)
 
-// router for events endpoint. set up for all 4 CRUD operations.
+// router for events endpoint. set up for get, post, patch, and delete
 eventsRouter
     .route('/')
     .get((req, res, next) => {

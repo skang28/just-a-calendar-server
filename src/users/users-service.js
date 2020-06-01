@@ -3,6 +3,7 @@ const xss = require('xss')
 
 const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/
 
+//users service set up for CRUD operations
 const UsersService = {
   hasUserWithUserName(db, user_name) {
     return db('jac_users')
